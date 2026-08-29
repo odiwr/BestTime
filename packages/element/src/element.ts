@@ -131,6 +131,22 @@ export class BestTimeElement extends HTMLElement {
 
     document.addEventListener("keydown", this.#onKey);
 
+    // Rows are assigned from measured label widths, and a web font that arrives
+    // after the first paint changes every one of them. Without this the layout
+    // stays committed to widths measured in the fallback face, which on a page
+    // using a display font means labels that overlap or rows that are half
+    // empty. Optional chaining because `document.fonts` is absent in some
+    // embedded webviews.
+    document.fonts?.ready
+      .then(() => {
+        if (!this.isConnected) return;
+        this.#axis.invalidateMetrics();
+        this.#schedule();
+      })
+      .catch(() => {
+        // A font that never resolves is not a reason to break the timeline.
+      });
+
     if (!this.#events.length) void this.load();
   }
 
