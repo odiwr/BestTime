@@ -49,9 +49,75 @@ const LABEL_BUDGETS = [24, 16, 10] as const;
 /** Top margin kept clear, so the tallest row is not flush with the edge. */
 const HEAD_ROOM = 18;
 
-/** Rough width of the label font, for measuring without laying anything out. */
-const CHAR_PX = 7.2;
-const LABEL_PADDING = 20;
+/** The label's own horizontal padding, from the stylesheet, plus a little slack. */
+const LABEL_PADDING = 18;
+
+/** Used only until a real font can be read, and if canvas is unavailable. */
+const FALLBACK_CHAR_PX = 7.2;
+
+/**
+ * How wide a headline will actually be.
+ *
+ * Rows are assigned from label widths, and the widths were previously guessed
+ * at a flat 7.2 pixels per character. That number was measured against one
+ * sans-serif at one size, so any theme that changes `--bt-font` or the label
+ * size got a layout computed from a lie: too wide and the axis wastes rows,
+ * too narrow and labels overlap the neighbours the packing was supposed to
+ * keep them away from. A serif theme ships in this repo, so the mismatch was
+ * not hypothetical.
+ *
+ * Canvas measures the real string in the real font without laying anything out,
+ * which matters because this runs inside a per-frame loop. Results are cached
+ * per string, and the cache is dropped whenever the font changes.
+ */
+class TextMeasure {
+  #context: CanvasRenderingContext2D | null = null;
+  #cache = new Map<string, number>();
+  #font = "";
+
+  constructor(private readonly doc: Document) {
+    try {
+      this.#context = doc.createElement("canvas").getContext("2d");
+    } catch {
+      // No canvas is not a reason to fail; the estimate below still draws.
+      this.#context = null;
+    }
+  }
+
+  /**
+   * Points the measurer at whatever the labels are actually rendering in.
+   *
+   * Composed from the longhand properties rather than read from the `font`
+   * shorthand: the shorthand comes back empty in some browsers when the pieces
+   * were set individually, which is exactly how a stylesheet sets them.
+   */
+  useFontOf(element: Element): void {
+    const style = getComputedStyle(element);
+    const font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+
+    if (font === this.#font) return;
+    this.#font = font;
+    this.#cache.clear();
+    if (this.#context) this.#context.font = font;
+  }
+
+  /** Throws away cached widths — for when a web font finishes loading. */
+  invalidate(): void {
+    this.#cache.clear();
+  }
+
+  width(text: string): number {
+    const cached = this.#cache.get(text);
+    if (cached !== undefined) return cached;
+
+    const measured = this.#context
+      ? this.#context.measureText(text).width
+      : text.length * FALLBACK_CHAR_PX;
+
+    this.#cache.set(text, measured);
+    return measured;
+  }
+}
 
 /** How wide a label may grow when the pointer is on it. */
 const HOVER_MAX_PX = 460;
@@ -86,11 +152,13 @@ export class Axis {
 
   #events: TimelineEvent[] = [];
   #scale: Scale = { segments: [], total: 1, range: 1, maxPxPerUnit: 1400 };
+  #measure: TextMeasure;
 
   constructor(
     private readonly doc: Document,
     private readonly onSelect: (id: string) => void,
   ) {
+    this.#measure = new TextMeasure(doc);
     this.el = doc.createElement("div");
     this.el.className = "bt-axis";
     this.el.tabIndex = 0;
@@ -239,8 +307,24 @@ export class Axis {
     }
   }
 
+  /**
+   * Drops cached text widths, so the next frame measures again.
+   *
+   * Called when a web font finishes loading: everything measured before that
+   * was measured in the fallback face, and the rows were assigned from it.
+   */
+  invalidateMetrics(): void {
+    this.#measure.invalidate();
+  }
+
   #renderMarkers(state: AxisState): void {
     const { pxPerUnit, offset, width, height, selectedId } = state;
+
+    // Measure in whatever the labels are really rendering in. Read from a live
+    // label rather than from a detached probe, so a page that themes the
+    // element through `--bt-font` is measured in its font and not the default.
+    const sample = this.#markersLayer.querySelector(".bt-label");
+    if (sample?.isConnected) this.#measure.useFontOf(sample);
 
     const rows = Math.max(
       1,
@@ -256,9 +340,12 @@ export class Axis {
         // Two widths per event: what it takes collapsed, and what it takes with
         // the whole headline showing. Rows are decided on the collapsed one so
         // the stack does not reshuffle every time the selection moves.
-        const widthOf = (chars: number) => chars * CHAR_PX + LABEL_PADDING;
-        const shut = widthOf(Math.min(event.headline.length, budget));
-        const open = widthOf(event.headline.length);
+        // The truncated string is measured, not the character count guessed at:
+        // "Illinois" and "WWW" are the same length and nothing like the same
+        // width, and a proportional font is the normal case.
+        const shut =
+          this.#measure.width(event.headline.slice(0, budget)) + LABEL_PADDING;
+        const open = this.#measure.width(event.headline) + LABEL_PADDING;
 
         // A label is centred on a point and left-aligned on a span, so its box
         // is measured from wherever it actually starts.
