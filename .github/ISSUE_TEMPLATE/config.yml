@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Question or idea
+    url: https://github.com/odiwr/BestTime/discussions
+    about: Anything that is not a bug — how do I, would you consider, look what I made.
+  - name: Security vulnerability
+    url: https://github.com/odiwr/BestTime/security/advisories/new
+    about: Please report these privately rather than in a public issue.

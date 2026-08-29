@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": ".",
+    // The core must not reach for the DOM. Dropping it from `lib` is what
+    // enforces that: an accidental `document` here is a compile error rather
+    // than a crash in somebody's Node build.
+    "lib": ["ES2022"],
+    "types": ["node"]
+  },
+  "include": ["src/**/*", "test/**/*"]
+}

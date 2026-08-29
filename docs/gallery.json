@@ -1,0 +1,12 @@
+{
+  "$comment": "Timelines built with BestTime. Add yours: one entry, alphabetical by title, and open a PR. Anything public is welcome — a class project counts.",
+  "timelines": [
+    {
+      "title": "A history of memory",
+      "url": "https://example.org/history",
+      "description": "700 BCE to now, from the Greek alphabet to machine retrieval.",
+      "author": "Memory Mission",
+      "sheet": null
+    }
+  ]
+}

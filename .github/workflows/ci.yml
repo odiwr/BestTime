@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# A new push to a PR makes the previous run pointless.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20, 22]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+
+      # What keeps the core portable is its tsconfig dropping the DOM lib: an
+      # accidental `document` is then a compile error, caught by the build step
+      # above. So the thing worth guarding is the tsconfig itself — the failure
+      # mode is someone adding DOM back to make an error go away, which would
+      # silently break every Node consumer.
+      #
+      # Checked this way rather than by grepping the sources, because "window"
+      # appears legitimately in prose comments and a guard that cries wolf gets
+      # deleted by the first contributor it blocks.
+      - name: Core must stay free of the DOM
+        run: |
+          node -e "
+            const fs = require('fs');
+            const raw = fs.readFileSync('packages/core/tsconfig.json', 'utf8');
+            const json = JSON.parse(raw.replace(/^\s*\/\/.*$/gm, ''));
+            const lib = json.compilerOptions.lib || [];
+            const dom = lib.filter((entry) => /^dom/i.test(entry));
+            if (dom.length) {
+              console.error('packages/core must not include the DOM lib (found: ' + dom.join(', ') + ').');
+              console.error('Browser-only APIs belong behind a globalThis feature check - see cacheStore() in loaders.ts.');
+              process.exit(1);
+            }
+          "
+
+      # An embed script that drags in a dependency tree is one nobody pastes
+      # into their site. Both shipped packages must stay standalone.
+      - name: Element must have no runtime dependencies but core
+        run: |
+          node -e "
+            const pkg = require('./packages/element/package.json');
+            const deps = Object.keys(pkg.dependencies || {});
+            const extra = deps.filter((d) => d !== '@besttime/core');
+            if (extra.length) {
+              console.error('Unexpected dependencies: ' + extra.join(', '));
+              process.exit(1);
+            }
+            const core = require('./packages/core/package.json');
+            if (Object.keys(core.dependencies || {}).length) {
+              console.error('@besttime/core must have zero dependencies.');
+              process.exit(1);
+            }
+          "
+
+  size:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      # Not a hard failure, but a number that should be argued for when it
+      # moves. The whole pitch is one small file.
+      - name: Report bundle size
+        run: |
+          FILE=packages/element/dist/besttime.global.js
+          RAW=$(wc -c < "$FILE")
+          GZIP=$(gzip -c "$FILE" | wc -c)
+          echo "### Bundle size" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| | bytes |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---|---|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| minified | $RAW |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| gzipped | $GZIP |" >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "$GZIP" -gt 25000 ]; then
+            echo "::warning::gzipped bundle is ${GZIP} bytes, over the 25 KB guideline."
+          fi

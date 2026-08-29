@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BestTime — plain HTML</title>
+
+    <!--
+      The whole library. One file, no dependencies, no build step.
+      In a real page this would be the CDN copy:
+
+      <script src="https://cdn.jsdelivr.net/npm/besttime@1"></script>
+    -->
+    <script src="../../packages/element/dist/besttime.global.js"></script>
+
+    <style>
+      body {
+        margin: 0;
+        padding: 40px 24px;
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        background: #fbfbfc;
+        color: #101114;
+      }
+      @media (prefers-color-scheme: dark) {
+        body { background: #0a0b0d; color: #f2f4f8; }
+      }
+      main { max-width: 1120px; margin: 0 auto; }
+      h1 { font-size: 28px; letter-spacing: -0.02em; margin: 0 0 4px; }
+      p.lede { margin: 0 0 32px; opacity: 0.6; font-size: 15px; }
+      section { margin-bottom: 56px; }
+      h2 {
+        font-size: 13px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        opacity: 0.45;
+        margin: 0 0 12px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <main>
+      <h1>BestTime</h1>
+      <p class="lede">
+        Drag the axis to travel, scroll to zoom, click a marker to read it.
+        Arrow keys step through in order.
+      </p>
+
+      <section>
+        <h2>A history — 700 BCE to now</h2>
+        <best-time id="history" height="620"></best-time>
+      </section>
+
+      <section>
+        <h2>The same component, a single year, dark, in green</h2>
+        <best-time
+          id="roadmap"
+          height="520"
+          axis-height="240"
+          theme="dark"
+          accent="#3f9f77"
+          max-year="none"
+          remember="false"
+        ></best-time>
+      </section>
+    </main>
+
+    <script>
+      // Two datasets, both inline, so this page works with no network at all.
+      // A real page points `src` at a published sheet instead and writes no
+      // JavaScript whatsoever.
+
+      const HISTORY = `Date,Display Date,Headline,Text,Media,Media Credit,Media Caption
+-700,c. 700 BCE,Writing spreads through Greece,"The alphabet arrives from Phoenicia and is adapted with vowels. Memory stops being the only place a culture can keep things.",https://en.wikipedia.org/wiki/Greek_alphabet,,
+-350,c. 350 BCE,Aristotle on memory,"De memoria et reminiscentia separates memory from recollection, and argues that recollection is a search rather than a retrieval.",https://plato.stanford.edu/entries/aristotle-psychology/,Stanford Encyclopedia,
+,1st-4th century,The art of memory,"Roman rhetoricians build the method of loci into formal training. A speech is walked through as a building.",,,
+1450,c. 1450,The printing press,"Gutenberg's press makes copies cheap. What had to be remembered can now be looked up.",https://en.wikipedia.org/wiki/Printing_press,,
+1885,1885,Ebbinghaus measures forgetting,"Hermann Ebbinghaus memorises nonsense syllables on himself for years and produces the first forgetting curve.",https://en.wikipedia.org/wiki/Hermann_Ebbinghaus,,
+1932,1932,Bartlett's Remembering,"Frederic Bartlett shows that recall reconstructs rather than replays, and that it drifts toward what the culture expects.",,,
+1953,1953,Patient H.M.,"A bilateral temporal lobectomy leaves Henry Molaison unable to form new declarative memories, and separates memory into systems.",https://en.wikipedia.org/wiki/Henry_Molaison,,
+1968,1968,Atkinson and Shiffrin,"The multi-store model: sensory, short-term, long-term. Wrong in the details and useful for decades.",,,
+1969,July 20 1969,Apollo 11,"An estimated 650 million people watch the landing. One of the first genuinely shared global memories.",https://www.youtube.com/watch?v=cwZb2mqId0A,NASA,Restored broadcast footage
+1972,1972,Levels of processing,"Craik and Lockhart argue depth of encoding matters more than which store something sits in.",,,
+1991,1991,The web,"Tim Berners-Lee publishes the first website. Recall starts being outsourced in earnest.",https://en.wikipedia.org/wiki/World_Wide_Web,,
+2011,2011,The Google effect,"Sparrow and colleagues find people remember where information is stored rather than the information.",,,
+2020s-present,2020s-present,Machine memory,"Retrieval systems begin holding context on our behalf, and the question of what is worth remembering is asked again.",,,`;
+
+      const ROADMAP = `Date,Display Date,Headline,Text
+2026-01-14,14 January,Core extracted,"Parser and axis arithmetic pulled into a package with no DOM in it."
+2026-02-02,2 February,Custom element,"Tailwind, motion and the icon package all removed. One file, no dependencies."
+2026-02-20,20 February,React wrapper,"Typed, and safe to render on a server."
+2026-03-09,9 March,Playground,"Paste a sheet URL, see it render, copy the snippet."
+2026-04-01,1 April,Gallery,"Timelines people built, submitted as a pull request."
+2026-06-15,15 June,Mobile axis,"A pinch-and-drag ruler that works at 375px."`;
+
+      const history = document.getElementById("history");
+      history.loader = BestTime.fromCsv(HISTORY, { now: 2026, maxYear: 2026 });
+      history.load();
+
+      const roadmap = document.getElementById("roadmap");
+      roadmap.loader = BestTime.fromCsv(ROADMAP, { maxYear: Infinity });
+      roadmap.load();
+
+      history.addEventListener("besttime:select", (event) => {
+        console.log("selected:", event.detail.event.headline);
+      });
+      history.addEventListener("besttime:load", (event) => {
+        console.log("loaded", event.detail.events.length, "events");
+      });
+    </script>
+  </body>
+</html>

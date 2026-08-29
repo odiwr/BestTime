@@ -1,0 +1,64 @@
+/*
+ * The default palette, written out.
+ *
+ * This file is not loaded by anything — the element already carries these
+ * values internally. It is here as the template: copy it, change the numbers,
+ * save it under a new name, and you have a theme.
+ *
+ * Custom properties cross the shadow boundary, which is the whole seam. You are
+ * never editing the component, only telling it what colours to be.
+ *
+ * Apply a theme by putting the class on the element:
+ *
+ *   <link rel="stylesheet" href="themes/parchment.css">
+ *   <best-time class="bt-parchment" src="..."></best-time>
+ */
+
+best-time {
+  /* The one colour that carries meaning: the selected event, the date line,
+     the focus ring. Everything else is paper and ink. */
+  --bt-accent: #588dbc;
+  /* Text sitting on top of the accent. Must clear 4.5:1 against it. */
+  --bt-accent-ink: #ffffff;
+
+  --bt-surface: #ffffff;
+  --bt-ink: #101114;
+
+  /* Ink at three strengths. Body text, tick labels, and the lines. Given as
+     rgba rather than a lighter hex so a theme works on any background. */
+  --bt-muted: rgba(16, 17, 20, 0.62);
+  --bt-faint: rgba(16, 17, 20, 0.4);
+  --bt-line: rgba(16, 17, 20, 0.14);
+  --bt-line-strong: rgba(16, 17, 20, 0.32);
+  --bt-hover: rgba(16, 17, 20, 0.06);
+
+  --bt-radius: 12px;
+  --bt-font:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+
+  /* Total height, and how much of it the axis strip takes. */
+  --bt-height: 620px;
+  --bt-axis-height: 300px;
+}
+
+/*
+ * The dark counterpart.
+ *
+ * Guarded on the element not being pinned to light, so an explicit
+ * theme="light" still wins. A theme that skips this block simply stays itself
+ * in both settings, which is a legitimate choice for a strongly branded one.
+ */
+@media (prefers-color-scheme: dark) {
+  best-time:not([theme="light"]) {
+    --bt-accent: #7aa9d4;
+    --bt-accent-ink: #0b0d10;
+    --bt-surface: #0f1115;
+    --bt-ink: #f2f4f8;
+    --bt-muted: rgba(242, 244, 248, 0.66);
+    --bt-faint: rgba(242, 244, 248, 0.42);
+    --bt-line: rgba(242, 244, 248, 0.16);
+    --bt-line-strong: rgba(242, 244, 248, 0.34);
+    --bt-hover: rgba(242, 244, 248, 0.08);
+  }
+}

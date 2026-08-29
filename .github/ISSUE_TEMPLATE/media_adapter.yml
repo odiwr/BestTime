@@ -1,0 +1,42 @@
+name: Media host support
+description: Ask for a host to be embeddable, or claim one to implement.
+title: "Media: support "
+labels: [media-adapter, good first issue]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Adapters are about fifteen self-contained lines. If you would like to
+        write it yourself, say so and it is yours — see
+        [docs/media-adapters.md](../../docs/media-adapters.md).
+
+  - type: input
+    id: host
+    attributes:
+      label: Which host
+      placeholder: mastodon.social
+    validations:
+      required: true
+
+  - type: input
+    id: example
+    attributes:
+      label: An example URL
+      description: The kind of link someone would actually paste in a Media column.
+    validations:
+      required: true
+
+  - type: textarea
+    id: embed
+    attributes:
+      label: How does it embed
+      description: |
+        An oEmbed endpoint, an iframe URL pattern, an image API, or "not sure".
+        "Not sure" is a fine answer — finding out is part of the issue.
+
+  - type: checkboxes
+    id: claim
+    attributes:
+      label: Would you like to write it
+      options:
+        - label: Yes, assign it to me

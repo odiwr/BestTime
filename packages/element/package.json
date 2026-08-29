@@ -1,0 +1,56 @@
+{
+  "name": "besttime",
+  "version": "0.1.0",
+  "description": "A zoomable, embeddable timeline that reads a published Google Sheet. One custom element, no dependencies, works in any framework.",
+  "license": "MIT",
+  "author": "odiwr",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/odiwr/BestTime.git",
+    "directory": "packages/element"
+  },
+  "homepage": "https://github.com/odiwr/BestTime#readme",
+  "bugs": "https://github.com/odiwr/BestTime/issues",
+  "keywords": [
+    "timeline",
+    "web-component",
+    "custom-element",
+    "google-sheets",
+    "timelinejs",
+    "history",
+    "embed",
+    "visualization"
+  ],
+  "type": "module",
+  "sideEffects": [
+    "./dist/index.js",
+    "./dist/besttime.global.js"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "unpkg": "./dist/besttime.global.js",
+  "jsdelivr": "./dist/besttime.global.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./global": "./dist/besttime.global.js",
+    "./themes/*": "./themes/*"
+  },
+  "files": [
+    "dist",
+    "themes"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@besttime/core": "0.1.0"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch"
+  }
+}

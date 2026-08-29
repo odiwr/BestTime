@@ -1,0 +1,8 @@
+# One line ending everywhere. A cross-platform project whose contributors are on
+# Windows, macOS and Linux otherwise produces diffs that are entirely whitespace.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff2 binary

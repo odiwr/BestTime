@@ -1,0 +1,44 @@
+name: Release
+
+# Publishing is driven by a tag, so cutting a release is `git tag v0.2.0 && git push --tags`
+# and nothing else. Requires an NPM_TOKEN secret with publish rights.
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      # Lets npm record where the package was built from, so anyone can verify
+      # the published tarball against this repository.
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+
+      # Order matters: core is a dependency of the other two, and element of
+      # the react wrapper.
+      - name: Publish
+        run: |
+          npm publish --workspace @besttime/core --provenance --access public
+          npm publish --workspace besttime --provenance --access public
+          npm publish --workspace @besttime/react --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true

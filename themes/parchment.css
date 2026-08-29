@@ -1,0 +1,27 @@
+/*
+ * Parchment — warm paper and a serif, for histories.
+ *
+ * Deliberately does not answer prefers-color-scheme. The point of this theme is
+ * that it looks like a printed page, and a dark parchment is not a thing.
+ *
+ *   <link rel="stylesheet" href="themes/parchment.css">
+ *   <best-time class="bt-parchment" src="..."></best-time>
+ */
+
+best-time.bt-parchment {
+  --bt-accent: #9c3d1f;
+  --bt-accent-ink: #fffdf7;
+
+  --bt-surface: #fffdf7;
+  --bt-ink: #241d16;
+
+  --bt-muted: rgba(36, 29, 22, 0.68);
+  --bt-faint: rgba(36, 29, 22, 0.45);
+  --bt-line: rgba(36, 29, 22, 0.16);
+  --bt-line-strong: rgba(36, 29, 22, 0.38);
+  --bt-hover: rgba(156, 61, 31, 0.08);
+
+  /* Barely rounded: a printed rule does not have a radius. */
+  --bt-radius: 3px;
+  --bt-font: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+}

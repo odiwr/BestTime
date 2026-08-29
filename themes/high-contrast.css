@@ -1,0 +1,60 @@
+/*
+ * High contrast — every pair clears WCAG AAA.
+ *
+ * The default palette holds tick labels and body text at 40-62% opacity, which
+ * reads well on a large screen and is genuinely hard to read for a good number
+ * of people. This theme trades that elegance for legibility: nothing is
+ * translucent, the lines are solid, and the accent is dark enough to carry
+ * white text at 7:1.
+ *
+ * Worth pairing with `prefers-contrast`, so it applies to the readers who asked
+ * for it without anyone having to opt in by hand.
+ *
+ *   <link rel="stylesheet" href="themes/high-contrast.css">
+ *   <best-time class="bt-high-contrast" src="..."></best-time>
+ */
+
+best-time.bt-high-contrast,
+best-time.bt-contrast-auto:where(:not([theme="dark"])) {
+  --bt-accent: #0b4a8f;
+  --bt-accent-ink: #ffffff;
+
+  --bt-surface: #ffffff;
+  --bt-ink: #000000;
+
+  --bt-muted: #1a1a1a;
+  --bt-faint: #333333;
+  --bt-line: #6b6b6b;
+  --bt-line-strong: #000000;
+  --bt-hover: #e4e4e4;
+
+  --bt-radius: 4px;
+}
+
+@media (prefers-contrast: more) {
+  best-time.bt-contrast-auto {
+    --bt-accent: #0b4a8f;
+    --bt-accent-ink: #ffffff;
+    --bt-surface: #ffffff;
+    --bt-ink: #000000;
+    --bt-muted: #1a1a1a;
+    --bt-faint: #333333;
+    --bt-line: #6b6b6b;
+    --bt-line-strong: #000000;
+    --bt-hover: #e4e4e4;
+  }
+}
+
+/* The dark half, for readers who want both high contrast and a dark screen. */
+best-time.bt-high-contrast[theme="dark"],
+best-time.bt-contrast-auto[theme="dark"] {
+  --bt-accent: #7db8f0;
+  --bt-accent-ink: #000000;
+  --bt-surface: #000000;
+  --bt-ink: #ffffff;
+  --bt-muted: #ededed;
+  --bt-faint: #cccccc;
+  --bt-line: #9a9a9a;
+  --bt-line-strong: #ffffff;
+  --bt-hover: #2a2a2a;
+}

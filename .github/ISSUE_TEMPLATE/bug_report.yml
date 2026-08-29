@@ -1,0 +1,67 @@
+name: Bug report
+description: Something renders wrong, reads a date wrong, or does not work.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **The single most useful thing you can give us is the data.** A published
+        sheet URL, or the two rows of CSV that reproduce it, turns an afternoon
+        of guessing into a five-minute fix.
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: And what you expected instead.
+    validations:
+      required: true
+
+  - type: input
+    id: source
+    attributes:
+      label: Your sheet or data
+      description: A published sheet URL, a gist, or paste the rows below.
+      placeholder: https://docs.google.com/spreadsheets/d/e/.../pubhtml
+
+  - type: textarea
+    id: rows
+    attributes:
+      label: The rows that reproduce it
+      description: Header row plus the offending rows. Trim it as far as you can.
+      render: csv
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      placeholder: besttime 0.1.0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: how
+    attributes:
+      label: How are you using it
+      options:
+        - Script tag / plain HTML
+        - React or Next.js
+        - Vue
+        - Svelte or SvelteKit
+        - Astro
+        - Other bundler
+        - "@besttime/core directly"
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and OS
+      placeholder: Firefox 141, Windows 11
+
+  - type: textarea
+    id: console
+    attributes:
+      label: Console output
+      render: shell

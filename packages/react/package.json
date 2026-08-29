@@ -1,0 +1,45 @@
+{
+  "name": "@besttime/react",
+  "version": "0.1.0",
+  "description": "React wrapper for the BestTime timeline element. Typed, and safe to render on a server.",
+  "license": "MIT",
+  "author": "odiwr",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/odiwr/BestTime.git",
+    "directory": "packages/react"
+  },
+  "homepage": "https://github.com/odiwr/BestTime#readme",
+  "bugs": "https://github.com/odiwr/BestTime/issues",
+  "keywords": ["timeline", "react", "google-sheets", "nextjs", "visualization"],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@besttime/core": "0.1.0",
+    "besttime": "0.1.0"
+  },
+  "peerDependencies": {
+    "react": ">=19"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "react": "^19.0.0"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch"
+  }
+}
