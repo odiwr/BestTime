@@ -1,10 +1,18 @@
 <div align="center">
 
+<img src="assets/poster.png" alt="BestTime — Fork it, Publish, &amp; Paste it." width="820">
+
 # BestTime
 
 **A zoomable timeline that reads a Google Sheet.**
 
 Fork a spreadsheet, publish it to the web, paste the link. That is the whole setup.
+
+[![npm](https://img.shields.io/npm/v/besttime?color=3d6b4a&label=npm)](https://www.npmjs.com/package/besttime)
+[![bundle](https://img.shields.io/badge/gzipped-17%20kB-3d6b4a)](https://www.npmjs.com/package/besttime)
+[![dependencies](https://img.shields.io/badge/dependencies-0-3d6b4a)](package.json)
+[![CI](https://github.com/odiwr/BestTime/actions/workflows/ci.yml/badge.svg)](https://github.com/odiwr/BestTime/actions/workflows/ci.yml)
+[![licence](https://img.shields.io/badge/licence-MIT-3d6b4a)](LICENSE)
 
 [Quick start](#quick-start) · [Why](#why-another-timeline) · [Options](#options) · [Frameworks](#every-other-framework) · [Contributing](CONTRIBUTING.md)
 
@@ -15,7 +23,7 @@ Fork a spreadsheet, publish it to the web, paste the link. That is the whole set
 ## Quick start
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/besttime@1"></script>
+<script src="https://cdn.jsdelivr.net/npm/besttime@0.1"></script>
 
 <best-time src="https://docs.google.com/spreadsheets/d/e/YOUR_ID/pubhtml"></best-time>
 ```
@@ -217,7 +225,7 @@ Then use `<best-time src="…">` in markup. No configuration needed in any of th
 Paste into a Custom HTML block:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/besttime@1"></script>
+<script src="https://cdn.jsdelivr.net/npm/besttime@0.1"></script>
 <best-time src="https://docs.google.com/…/pubhtml"></best-time>
 ```
 </details>
