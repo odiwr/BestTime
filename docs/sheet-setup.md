@@ -23,6 +23,7 @@ Matched loosely — case, underscores and hyphens are all ignored, and each fiel
 | `Media` | `URL`, `Link`, `Image`, `Source URL` |
 | `Media Credit` | `Credit`, `Author` |
 | `Media Caption` | `Caption`, `Alt` |
+| `Media Fit` | `Crop`, `Focus`, `Fit` |
 | `End` | `End Date`, `End Year` |
 
 Any column BestTime does not recognise is kept on the event under `extra`, so nothing you write is thrown away.
@@ -68,7 +69,31 @@ By default anything past today is clamped to today, because on a history a centu
 <best-time src="…" max-year="none"></best-time>
 ```
 
-## 3. Publish it
+## 3. Framing pictures
+
+The media pane is a fixed shape and photographs are not. By default the image
+fills the frame and is cropped from the centre, which is fine for a landscape
+and bad for a portrait — the subject is usually near the top, and a centre crop
+takes their head off.
+
+Put a **`Media Fit`** column in your sheet and say where to crop from:
+
+| You write | What happens |
+|---|---|
+| *(empty)* | Fills the frame, cropped from the centre |
+| `top` | Fills the frame, keeping the top. **The one you will use most.** |
+| `bottom` · `left` · `right` | The same, from the other edges |
+| `top left` · `bottom right` | Two edges at once |
+| `25%` | Vertical position — `0%` is the top, `100%` the bottom |
+| `30% 70%` | Horizontal then vertical, as in CSS |
+| `contain` | Shows the whole picture, letterboxed. Nothing is cut off |
+| `contain top` | Both together |
+
+Trailing punctuation is fine, and so is a bare number — `top.`, `25` and `25%`
+all do what you meant. Anything it cannot read falls back to a centre crop
+rather than failing the row.
+
+## 4. Publish it
 
 **File → Share → Publish to web → Publish.** Publish the whole document, or just the sheet holding your events.
 
@@ -83,7 +108,7 @@ BestTime rewrites whichever you give it to the CSV export.
 
 > **Publishing is not the same as sharing.** A sheet set to "anyone with the link can view" is still not published, and BestTime cannot read it. You need the Publish to web step specifically.
 
-## 4. Use it
+## 5. Use it
 
 ```html
 <best-time src="PASTE_THE_URL_HERE"></best-time>

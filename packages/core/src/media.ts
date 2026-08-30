@@ -221,6 +221,129 @@ export function hostLabel(url: string): string {
   return hostname ? hostname.replace(/^www\./, "") : url;
 }
 
+/**
+ * How a picture should sit in the frame it is given.
+ *
+ * The pane is a fixed shape and photographs are not, so something has to give.
+ * By default the image fills the frame and is cropped from the centre, which is
+ * right often enough — and wrong in exactly the cases that matter most, because
+ * the subject of a portrait is usually near the top and the centre crop cuts
+ * their head off.
+ *
+ * So the author gets to say. In the sheet, next to everything else they control,
+ * rather than in code they would have to be a programmer to reach.
+ */
+export type MediaFit = {
+  /** `cover` fills the frame and crops; `contain` shows all of it, letterboxed. */
+  fit: "cover" | "contain";
+  /** A CSS `object-position`, already validated. */
+  position: string;
+};
+
+export const DEFAULT_FIT: MediaFit = { fit: "cover", position: "50% 50%" };
+
+const HORIZONTAL: Record<string, string> = { left: "0%", right: "100%" };
+const VERTICAL: Record<string, string> = { top: "0%", bottom: "100%" };
+
+/**
+ * Reads a framing instruction written by a person into a spreadsheet cell.
+ *
+ * Everything here is validated against a whitelist and rebuilt from scratch,
+ * never passed through. This value comes from a URL the page author does not
+ * control the contents of, and it ends up in a style attribute — so the parser
+ * has to be the place where anything that is not a keyword or a percentage
+ * stops. A cell it cannot read yields `null`, and the caller uses the default.
+ *
+ * Accepts what someone would plausibly type:
+ *
+ *   top · bottom · left · right · center
+ *   top left · bottom right
+ *   25%  (vertical, because that is the axis people mean)
+ *   30% 70%
+ *   contain · fit · whole
+ *   contain top
+ */
+export function parseMediaFit(raw: string | undefined): MediaFit | null {
+  if (!raw) return null;
+
+  const words = raw
+    .trim()
+    .toLowerCase()
+    .split(/[\s,]+/)
+    // Trailing punctuation is stripped so that "top." and "top;" mean "top" —
+    // this is a spreadsheet cell and people punctuate. A leading minus is
+    // kept, because it is the difference between 20% and an invalid -20%,
+    // and that one has to keep failing.
+    .map((word) => word.replace(/^[^a-z0-9%.\-]+|[^a-z0-9%.\-]+$/g, ""))
+    .filter(Boolean);
+
+  if (words.length === 0) return null;
+
+  let fit: MediaFit["fit"] | null = null;
+  let horizontal: string | null = null;
+  let vertical: string | null = null;
+  const percentages: string[] = [];
+  let understood = false;
+
+  for (const word of words) {
+    if (/^(contain|fit|whole|full|letterbox)$/.test(word)) {
+      fit = "contain";
+      understood = true;
+      continue;
+    }
+    if (/^(cover|crop|fill)$/.test(word)) {
+      fit = "cover";
+      understood = true;
+      continue;
+    }
+    if (word === "center" || word === "centre" || word === "middle") {
+      understood = true;
+      continue;
+    }
+    if (word in HORIZONTAL) {
+      horizontal = HORIZONTAL[word];
+      understood = true;
+      continue;
+    }
+    if (word in VERTICAL) {
+      vertical = VERTICAL[word];
+      understood = true;
+      continue;
+    }
+
+    // A bare number is a percentage. People write "20" as often as "20%", and
+    // rejecting the first would be pedantry in a spreadsheet cell.
+    const number = word.match(/^(\d{1,3}(?:\.\d+)?)%?$/);
+    if (number) {
+      const value = Number(number[1]);
+      if (value >= 0 && value <= 100) {
+        percentages.push(`${value}%`);
+        understood = true;
+      }
+      continue;
+    }
+
+    // Anything else is not something this understands. Ignored rather than
+    // fatal — a stray word should not cost the reader the picture.
+  }
+
+  if (!understood) return null;
+
+  // Two percentages are x then y, as in CSS. One is vertical, because the
+  // reason anyone reaches for this is a subject too high or too low in frame.
+  if (percentages.length >= 2) {
+    horizontal = percentages[0];
+    vertical = percentages[1];
+  } else if (percentages.length === 1) {
+    vertical = percentages[0];
+  }
+
+  return {
+    fit: fit ?? "cover",
+    position: `${horizontal ?? "50%"} ${vertical ?? "50%"}`,
+  };
+}
+
 export type ResolvedMedia =
   | { type: "frame"; src: string; kind: MediaKind }
   | { type: "image"; src: string; kind: MediaKind }

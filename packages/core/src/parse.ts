@@ -25,6 +25,11 @@ const FIELDS = {
   media: ["media", "url", "link", "image", "source url"],
   mediaCredit: ["media credit", "mediacredit", "credit", "author"],
   mediaCaption: ["media caption", "mediacaption", "caption", "alt"],
+  /**
+   * Framing, so an author can stop a portrait being cropped through the face
+   * without leaving the spreadsheet they are already in.
+   */
+  mediaFit: ["media fit", "mediafit", "fit", "crop", "media crop", "focus"],
   /** TimelineJS's end-of-span columns, folded in where present. */
   end: ["end", "end date", "enddate", "end year", "endyear"],
   /**
@@ -164,6 +169,7 @@ export function rowsToEvents(
       media: media || undefined,
       mediaCredit: cell(row, "mediaCredit") || undefined,
       mediaCaption: cell(row, "mediaCaption") || undefined,
+      mediaFit: cell(row, "mediaFit") || undefined,
       extra: Object.keys(extra).length > 0 ? extra : undefined,
     });
   });

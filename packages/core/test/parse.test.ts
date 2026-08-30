@@ -212,6 +212,24 @@ describe("media", () => {
     expect(canEmbed("")).toBe(false);
   });
 
+  it("reads a framing instruction from the sheet", () => {
+    const events = eventsFromCsv(
+      "Date,Headline,Media,Media Fit\n1969,Moon,https://example.com/a.jpg,top",
+      options,
+    );
+    expect(events[0].mediaFit).toBe("top");
+  });
+
+  it("lets a framing column be spelled several ways", () => {
+    for (const header of ["Media Fit", "Crop", "Focus", "media_fit"]) {
+      const events = eventsFromCsv(
+        `Date,Headline,${header}\n1969,Moon,bottom`,
+        options,
+      );
+      expect(events[0].mediaFit).toBe("bottom");
+    }
+  });
+
   it("lets a registered adapter take over a host", () => {
     // The contribution surface. Adding a host should cost fifteen lines in a
     // file of its own, not a patch to the middle of a component.

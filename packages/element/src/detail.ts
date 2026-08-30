@@ -1,4 +1,10 @@
-import { hostLabel, resolveMedia, type TimelineEvent } from "@besttime/core";
+import {
+  DEFAULT_FIT,
+  hostLabel,
+  parseMediaFit,
+  resolveMedia,
+  type TimelineEvent,
+} from "@besttime/core";
 
 /**
  * The upper half: what the selected event actually is.
@@ -199,7 +205,18 @@ export class Detail {
       img.loading = "lazy";
       img.decoding = "async";
       img.referrerPolicy = "no-referrer";
-      img.style.objectPosition = `50% ${this.crops[event.media] ?? 50}%`;
+
+      // Framing, in order of who is most likely to be right: the `crops`
+      // property set in code wins, because whoever set it was looking at this
+      // exact picture; then the sheet's own column; then a centre crop.
+      const override = this.crops[event.media];
+      const fit =
+        override === undefined
+          ? (parseMediaFit(event.mediaFit) ?? DEFAULT_FIT)
+          : { fit: "cover" as const, position: `50% ${override}%` };
+
+      img.style.objectFit = fit.fit;
+      img.style.objectPosition = fit.position;
       // A link that no longer resolves is discovered here and nowhere else.
       img.addEventListener("error", collapse, { once: true });
       pane.append(img);
