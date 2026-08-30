@@ -82,6 +82,8 @@ Every option is an attribute, so they work identically in HTML and in every fram
 
 ### Theming
 
+> **If your page is light-only, say so.** By default the element follows the *reader's* system setting, not your page — so a visitor with dark mode enabled gets a dark timeline against your white background. Add `theme="light"` (or `theme="dark"`) to pin it. Leave it off only if your own page also responds to `prefers-color-scheme`.
+
 The element is styled entirely through custom properties, which cross the shadow boundary. Set them from your own CSS:
 
 ```css
