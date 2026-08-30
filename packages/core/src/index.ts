@@ -71,6 +71,9 @@ export {
   canEmbed,
   hostLabel,
   resolveMedia,
+  parseMediaFit,
+  DEFAULT_FIT,
+  type MediaFit,
   type MediaAdapter,
   type ResolvedMedia,
 } from "./media";

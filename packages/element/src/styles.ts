@@ -494,6 +494,97 @@ export const STYLES = /* css */ `
   .bt-dot, .bt-label, .bt-stem, .bt-bar { transition-duration: 1ms; }
 }
 
+/* ------------------------------------------------------------------ */
+/* minimal                                                            */
+/* ------------------------------------------------------------------ */
+
+/*
+ * <best-time minimal> — the same timeline with the boxes taken away.
+ *
+ * Not a theme. A theme changes what colour things are; this changes how much
+ * furniture there is. Every border, panel and chip comes off, leaving the
+ * baseline, the dots and the words — which is what the component is actually
+ * made of. Useful when the timeline sits inside a page that already has its
+ * own frame around it, where a second box is one box too many.
+ *
+ * Nothing here is hidden or moved, so it stays in step with the standard
+ * layout automatically. It is all surface.
+ */
+:host([minimal]) .bt-axis {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+:host([minimal]) .bt-button {
+  border-color: transparent;
+  background: transparent;
+}
+
+/* Even the solid stepping buttons lose their fill, so the only ink in the
+   control strip is the arrows themselves. */
+:host([minimal]) .bt-button[data-solid] {
+  background: transparent;
+  color: var(--bt-ink);
+}
+
+:host([minimal]) .bt-button:hover:not(:disabled),
+:host([minimal]) .bt-button[data-solid]:hover:not(:disabled) {
+  background: var(--bt-hover);
+  color: var(--bt-ink);
+}
+
+/* Labels become text on the page rather than chips on a surface. The selected
+   one keeps its accent as colour instead of as a fill — with no panel behind
+   it, a coloured word is enough to find. */
+:host([minimal]) .bt-label {
+  padding-left: 0;
+  padding-right: 0;
+  background: transparent;
+}
+
+:host([minimal]) .bt-marker:hover .bt-label,
+:host([minimal]) .bt-marker:focus-visible .bt-label {
+  background: transparent;
+  color: var(--bt-ink);
+}
+
+:host([minimal]) .bt-marker[data-selected] .bt-label,
+:host([minimal]) .bt-marker[data-selected]:hover .bt-label {
+  background: transparent;
+  color: var(--bt-accent);
+  font-weight: 600;
+  box-shadow: none;
+}
+
+/* A label with no panel behind it needs the centring adjusted: the chip's
+   padding was doing part of that work. */
+:host([minimal]) .bt-label[data-centred] {
+  transform: translateX(-50%);
+}
+
+/* An inferred span was a hollow bar drawn with an inset ring. With outlines
+   gone it says the same thing by being fainter and shorter instead. */
+:host([minimal]) .bt-bar {
+  height: 3px;
+}
+
+:host([minimal]) .bt-bar[data-approximate] {
+  background: var(--bt-line);
+  box-shadow: none;
+}
+
+:host([minimal]) .bt-media {
+  border-radius: 0;
+}
+
+/* The break mark sits on a panel that punches through the baseline. With a
+   transparent axis there is nothing to punch through, so it takes the page's
+   own background instead. */
+:host([minimal]) .bt-break {
+  background: var(--bt-surface);
+}
+
 /* Screen-reader-only, for the list that makes this thing readable without
    a pointer. */
 .bt-sr {

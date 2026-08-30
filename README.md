@@ -78,6 +78,7 @@ Every option is an attribute, so they work identically in HTML and in every fram
 | `min-year` | unbounded | Earliest year any span may reach. |
 | `collapse-gaps` | `true` | `false` draws true distances and never compresses. |
 | `remember` | `true` | `false` stops remembering which event was last open. |
+| `minimal` | off | Present = strip every border, panel and chip. See [below](#minimal). |
 | `cache-ms` | `300000` | How long a fetched sheet stays cached in the tab. `0` disables. |
 
 ### Theming
@@ -97,6 +98,41 @@ best-time {
 ```
 
 Ready-made sets live in [`themes/`](themes/). Contributing one is the easiest useful PR in the repo.
+
+### Minimal
+
+`minimal` is not a theme — a theme changes what colour things are, this changes
+how much furniture there is. Every border, panel and label chip comes off,
+leaving the baseline, the dots and the words:
+
+```html
+<best-time src="…" minimal></best-time>
+```
+
+Use it when the timeline sits inside a page that already has a frame around it,
+where a second box is one box too many. It composes with themes and with
+`accent`.
+
+### Framing pictures
+
+The media pane is a fixed shape and photographs are not, so by default an image
+fills the frame and is cropped from the centre. That is wrong exactly when it
+matters most — the subject of a portrait is usually near the top, and a centre
+crop takes their head off.
+
+Add a **`Media Fit`** column to your sheet and say where to crop from:
+
+| You write | What happens |
+|---|---|
+| *(empty)* | Fills the frame, cropped from the centre |
+| `top` · `bottom` · `left` · `right` | Fills the frame, cropped from that edge |
+| `top left` · `bottom right` | Two edges at once |
+| `25%` | Vertical position — 0% is the top, 100% the bottom |
+| `30% 70%` | Horizontal then vertical, as in CSS |
+| `contain` | Shows the whole picture, letterboxed. Nothing is cut off |
+| `contain top` | Both together |
+
+The column also answers to `Crop`, `Focus` and `Fit`.
 
 ### Events
 

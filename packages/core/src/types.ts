@@ -26,6 +26,11 @@ export type TimelineEvent = {
   media?: string;
   mediaCredit?: string;
   mediaCaption?: string;
+  /**
+   * How the picture should sit in its frame, as the author wrote it —
+   * "top", "contain", "30% 70%". Read with `parseMediaFit`.
+   */
+  mediaFit?: string;
 
   /** Any column the schema does not name, keyed by its header. */
   extra?: Record<string, string>;
