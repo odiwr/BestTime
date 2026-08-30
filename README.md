@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/poster.png" alt="BestTime — Fork it, Publish, &amp; Paste it." width="820">
+<img src="assets/poster.jpg" alt="BestTime" width="820">
 
 # BestTime
 
